@@ -1,0 +1,103 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+}
+
+.converter-container {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 1.5rem;
+    color: #4a4a4a;
+    font-size: 1.5rem;
+}
+
+.currency-block {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-bottom: 1.5rem;
+}
+
+.label {
+    margin-bottom: 0.3rem;
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: #777;
+}
+
+.input, select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+    cursor: pointer;
+}
+
+.input:focus, select:focus {
+    border-color: #667eea;
+}
+
+#swap-btn {
+    background-color: #2e2ca9;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 10px 0;
+    transition: transform 0.3s, background 0.3s;
+    width: 40px;
+    height: 40px;
+}
+
+#swap-btn:hover {
+    background: #108308;
+    transform: rotate(180deg);
+}
+
+.result-section {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+#exchange-rate {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 0.5rem;
+}
+
+#converted-amount {
+    color: #2d3436;
+    font-size: 1.8rem;
+}
+
+#last-updated {
+    font-size: 0.8rem;
+    color: #018009;
+    margin-top: 1rem;
+    font-weight: bold;
+}
