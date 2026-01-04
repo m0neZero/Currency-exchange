@@ -1,3 +1,4 @@
 # Ignore API secret files in this directory and the congig files
 
-secr/*.js
+.env
+node_modules
