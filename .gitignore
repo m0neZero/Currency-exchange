@@ -1,4 +1,5 @@
-# Ignore API secret files in this directory and the congig files
-
+# dotenv environment variables file(s)
 .env
+
+# Node modules
 node_modules
