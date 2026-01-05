@@ -1,55 +1,145 @@
-const amountInput = document.getElementById('amount');
-const fromSelect = document.getElementById('from-currency');
-const toSelect = document.getElementById('to-currency');
-const resultDisplay = document.getElementById('converted-amount');
-const rateDisplay = document.getElementById('exchange-rate');
-const swapBtn = document.getElementById('swap-btn');
-const lastUpdated = document.getElementById('last-updated');
+// 1. Инициализация элементов (под твой новый HTML)
+const amountInput = document.querySelector(".amount input");
+const fromSelect = document.querySelector(".from select");
+const toSelect = document.querySelector(".to select");
+const resultDisplay = document.querySelector(".msg"); // Блок для вывода текста курса
+const getButton = document.querySelector("form button"); // Твоя кнопка "Get Exchange Rate"
+const swapIcon = document.querySelector(".fa-arrow-right-arrow-left");
 
+// 2. Наполнение выпадающих списков из country.js
+function populateSelects() {
+    for (let currency_code in countryList) {
+        // Установим USD и UAH как дефолтные для старта
+        let selectedFrom = currency_code === "USD" ? "selected" : "";
+        let selectedTo = currency_code === "UAH" ? "selected" : "";
+
+        let optionTag = `<option value="${currency_code}" ${selectedFrom} ${selectedTo}>${currency_code}</option>`;
+        
+        fromSelect.insertAdjacentHTML("beforeend", optionTag);
+        toSelect.insertAdjacentHTML("beforeend", optionTag);
+    }
+}
+
+// 3. Функция обновления флага
+function loadFlag(element) {
+    let code = element.value;
+    let countryCode = countryList[code];
+    // Находим картинку внутри родительского контейнера этого селекта
+    let imgTag = element.parentElement.querySelector("img");
+    imgTag.src = `https://flagsapi.com/${countryCode}/flat/64.png`;
+}
+
+// 4. ГЛАВНАЯ ФУНКЦИЯ: Запрос к твоему серверу
 async function calculate() {
     const amount = amountInput.value;
     const from = fromSelect.value;
     const to = toSelect.value;
 
-    // Если ввели 0 или минус — ничего не делаем, чтобы не грузить сервер
-    if (amount <= 0) {
-        resultDisplay.innerText = "0.00";
+    if (amount <= 0 || amount === "") {
+        resultDisplay.innerText = "Please enter a valid amount";
         return;
     }
 
-    try { // Запрос к серверу для получения курса
+    resultDisplay.innerText = "Getting rate...";
+
+    try {
+        // Твой старый добрый запрос к серваку
         const response = await fetch(`/api/convert/${from}/${to}`);
         const data = await response.json();
 
-        if (data.conversion_rate) { // Если курс получен успешно
-            const total = (amount * data.conversion_rate).toFixed(2); // Считаем итоговую сумму с двумя знаками после запятой
+        if (data.conversion_rate) {
+            const total = (amount * data.conversion_rate).toFixed(2);
+            // Красивый вывод результата
+            resultDisplay.innerText = `${amount} ${from} = ${total} ${to}`;
             
-            // Выводим результат
-            resultDisplay.innerText = `${total} ${to}`; // Отформатированный вывод
-            rateDisplay.innerText = `Exchange Rate: 1 ${from} = ${data.conversion_rate} ${to}`; // Курс обмена
-            
-            // Обновляем время (возьмем текущее)
-            const now = new Date();
-            lastUpdated.innerText = `Last updated: ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+            // Если у тебя остались доп. поля для времени — можно добавить их сюда
+            console.log("Курс обновлен:", data.conversion_rate);
         }
-    } catch (error) { // Обработка ошибок
-        console.error("Ошибка:", error); // Логируем ошибку в консоль для дебага. А что такое дебаг? Это когда ты ищешь ошибки в коде, блять но ты не знаешь где они и как их найти, вот для этого и нужен дебаггер
-        rateDisplay.innerText = "Сервер недоступен"; // Сообщаем что сервер не отвечает
+    } catch (error) {
+        console.error("Дебаг (поиск ошибок):", error);
+        resultDisplay.innerText = "Сервер недоступен";
     }
 }
 
-// Магия для кнопки ⇄
-swapBtn.addEventListener('click', () => { // При клике на кнопку обмена валют
-    const temp = fromSelect.value; // Меняем местами выбранные валюты
-    fromSelect.value = toSelect.value; // Меняем местами выбранные валюты
-    toSelect.value = temp; // Меняем местами выбранные валюты
-    calculate(); // Пересчитываем сразу после обмена
+// 5. ОБРАБОТЧИКИ СОБЫТИЙ
+
+// Запрет буквы 'e'
+amountInput.addEventListener("keydown", (e) => {
+    if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault();
 });
 
-// Слушатели для живого обновления
-amountInput.addEventListener('input', calculate);
-fromSelect.addEventListener('change', calculate);
-toSelect.addEventListener('change', calculate);
+// Смена флагов при выборе валюты
+fromSelect.addEventListener("change", (e) => {
+    loadFlag(e.target);
+    calculate(); // Живое обновление при смене
+});
 
-// Запуск при загрузке страницы и чтобы оно не ебнулось на пустом месте
-calculate();
+toSelect.addEventListener("change", (e) => {
+    loadFlag(e.target);
+    calculate(); // Живое обновление при смене
+});
+
+// Живое обновление при вводе суммы
+amountInput.addEventListener("input", calculate);
+
+// Магия кнопки Swap (иконки)
+swapIcon.addEventListener("click", () => {
+    const temp = fromSelect.value;
+    fromSelect.value = toSelect.value;
+    toSelect.value = temp;
+    
+    // Обновляем флаги после подмены
+    loadFlag(fromSelect);
+    loadFlag(toSelect);
+    
+    calculate();
+});
+
+// Кнопка внизу (на всякий случай)
+getButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    calculate();
+});
+
+// При загрузке страницы
+window.addEventListener("load", () => {
+    populateSelects(); // Наполняем
+    loadFlag(fromSelect); // Ставим флаги
+    loadFlag(toSelect);
+    calculate(); // Считаем первый раз
+});
+
+// --- КОНЕЦ ФАЙЛА (БЛОК ОБРАБОТЧИКОВ) ---
+
+// Запрещаем ВСЁ, кроме цифр, точки и системных клавиш
+amountInput.addEventListener("keydown", (e) => {
+    const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', '.', 'v', 'c']; // v и c для Ctrl+V/C
+    
+    // Проверка на цифры
+    const isNumber = e.key >= '0' && e.key <= '9';
+    const isControl = allowedKeys.includes(e.key);
+
+    if (!isNumber && !isControl) {
+        e.preventDefault();
+    }
+
+    // Запрет второй точки
+    if (e.key === '.' && amountInput.value.includes('.')) {
+        e.preventDefault();
+    }
+});
+
+// Финальная зачистка при вставке (если кто-то умудрился вставить буквы через мышку)
+amountInput.addEventListener("input", (e) => {
+    // Регулярное выражение: оставить только цифры и одну точку
+    let value = e.target.value;
+    e.target.value = value.replace(/[^0-9.]/g, '');
+    
+    // Если точек больше одной — оставляем только первую
+    const parts = e.target.value.split('.');
+    if (parts.length > 2) {
+        e.target.value = parts[0] + '.' + parts.slice(1).join('');
+    }
+
+    calculate(); // Пересчитываем только чистые данные
+});
