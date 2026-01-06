@@ -70,17 +70,12 @@ amountInput.addEventListener("keydown", (e) => {
 
 // Смена флагов при выборе валюты
 fromSelect.addEventListener("change", (e) => {
-    loadFlag(e.target);
-    calculate(); // Живое обновление при смене
+    loadFlag(e.target); // Обновляем флаг
 });
 
 toSelect.addEventListener("change", (e) => {
-    loadFlag(e.target);
-    calculate(); // Живое обновление при смене
+    loadFlag(e.target); // Обновляем флаг ещё раз сука
 });
-
-// Живое обновление при вводе суммы
-amountInput.addEventListener("input", calculate);
 
 // Магия кнопки Swap (иконки)
 swapIcon.addEventListener("click", () => {
@@ -91,8 +86,6 @@ swapIcon.addEventListener("click", () => {
     // Обновляем флаги после подмены
     loadFlag(fromSelect);
     loadFlag(toSelect);
-    
-    calculate();
 });
 
 // Кнопка внизу (на всякий случай)
@@ -106,7 +99,6 @@ window.addEventListener("load", () => {
     populateSelects(); // Наполняем
     loadFlag(fromSelect); // Ставим флаги
     loadFlag(toSelect);
-    calculate(); // Считаем первый раз
 });
 
 // --- КОНЕЦ ФАЙЛА (БЛОК ОБРАБОТЧИКОВ) ---
@@ -141,5 +133,4 @@ amountInput.addEventListener("input", (e) => {
         e.target.value = parts[0] + '.' + parts.slice(1).join('');
     }
 
-    calculate(); // Пересчитываем только чистые данные
 });
