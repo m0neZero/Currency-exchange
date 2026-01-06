@@ -2,6 +2,8 @@
 
 A reliable web application for real-time currency conversion, built with a focus on security and clean user experience.
 
+I will be fixing all Bugs if I will spot them
+
 ## 🌟 Key Features
 * **Secure Backend**: Uses a Node.js/Express proxy to hide sensitive API keys from the client-side.
 * **Live Input Validation**: Prevents invalid characters (letters, multiple dots, etc.) in the amount field.
