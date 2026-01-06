@@ -1,15 +1,15 @@
-// 1. Инициализация элементов (под твой новый HTML)
+// 1. Initialize elements from DOM
 const amountInput = document.querySelector(".amount input");
 const fromSelect = document.querySelector(".from select");
 const toSelect = document.querySelector(".to select");
-const resultDisplay = document.querySelector(".msg"); // Блок для вывода текста курса
-const getButton = document.querySelector("form button"); // Твоя кнопка "Get Exchange Rate"
+const resultDisplay = document.querySelector(".msg"); // Block for displaying exchange rate text
+const getButton = document.querySelector("form button"); // Your "Get Exchange Rate" button
 const swapIcon = document.querySelector(".fa-arrow-right-arrow-left");
 
-// 2. Наполнение выпадающих списков из country.js
+// 2. Populate dropdown lists from country.js
 function populateSelects() {
     for (let currency_code in countryList) {
-        // Установим USD и UAH как дефолтные для старта
+        // Set USD and UAH as default for startup
         let selectedFrom = currency_code === "USD" ? "selected" : "";
         let selectedTo = currency_code === "UAH" ? "selected" : "";
 
@@ -20,16 +20,16 @@ function populateSelects() {
     }
 }
 
-// 3. Функция обновления флага
+// 3. Function to update flag
 function loadFlag(element) {
     let code = element.value;
     let countryCode = countryList[code];
-    // Находим картинку внутри родительского контейнера этого селекта
+    // Find the image inside the parent container of this select
     let imgTag = element.parentElement.querySelector("img");
     imgTag.src = `https://flagsapi.com/${countryCode}/flat/64.png`;
 }
 
-// 4. ГЛАВНАЯ ФУНКЦИЯ: Запрос к твоему серверу
+// 4. MAIN FUNCTION: Request to your server
 async function calculate() {
     const amount = amountInput.value;
     const from = fromSelect.value;
@@ -43,71 +43,71 @@ async function calculate() {
     resultDisplay.innerText = "Getting rate...";
 
     try {
-        // Твой старый добрый запрос к серваку
+        // Your reliable server request
         const response = await fetch(`/api/convert/${from}/${to}`);
         const data = await response.json();
 
         if (data.conversion_rate) {
             const total = (amount * data.conversion_rate).toFixed(2);
-            // Красивый вывод результата
+            // Pretty output of the result
             resultDisplay.innerText = `${amount} ${from} = ${total} ${to}`;
             
-            // Если у тебя остались доп. поля для времени — можно добавить их сюда
-            console.log("Курс обновлен:", data.conversion_rate);
+            // If you have additional fields for time — you can add them here
+            console.log("Rate updated:", data.conversion_rate);
         }
     } catch (error) {
-        console.error("Дебаг (поиск ошибок):", error);
-        resultDisplay.innerText = "Сервер недоступен";
+        console.error("Debug (error search):", error);
+        resultDisplay.innerText = "Server unavailable";
     }
 }
 
-// 5. ОБРАБОТЧИКИ СОБЫТИЙ
+// 5. EVENT HANDLERS
 
-// Запрет буквы 'e'
+// Block the letter 'e'
 amountInput.addEventListener("keydown", (e) => {
     if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault();
 });
 
-// Смена флагов при выборе валюты
+// Change flags when currency is selected
 fromSelect.addEventListener("change", (e) => {
-    loadFlag(e.target); // Обновляем флаг
+    loadFlag(e.target); // Update flag
 });
 
 toSelect.addEventListener("change", (e) => {
-    loadFlag(e.target); // Обновляем флаг ещё раз сука
+    loadFlag(e.target); // Update flag
 });
 
-// Магия кнопки Swap (иконки)
+// Swap button magic (icon)
 swapIcon.addEventListener("click", () => {
     const temp = fromSelect.value;
     fromSelect.value = toSelect.value;
     toSelect.value = temp;
     
-    // Обновляем флаги после подмены
+    // Update flags after swap
     loadFlag(fromSelect);
     loadFlag(toSelect);
 });
 
-// Кнопка внизу (на всякий случай)
+// Bottom button (just in case)
 getButton.addEventListener("click", (e) => {
     e.preventDefault();
     calculate();
 });
 
-// При загрузке страницы
+// On page load
 window.addEventListener("load", () => {
-    populateSelects(); // Наполняем
-    loadFlag(fromSelect); // Ставим флаги
+    populateSelects(); // Populate
+    loadFlag(fromSelect); // Set flags
     loadFlag(toSelect);
 });
 
-// --- КОНЕЦ ФАЙЛА (БЛОК ОБРАБОТЧИКОВ) ---
+// --- END OF FILE (EVENT HANDLERS BLOCK) ---
 
-// Запрещаем ВСЁ, кроме цифр, точки и системных клавиш
+// Allow ONLY numbers, dots, and system keys
 amountInput.addEventListener("keydown", (e) => {
-    const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', '.', 'v', 'c']; // v и c для Ctrl+V/C
+    const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', '.', 'v', 'c']; // v and c for Ctrl+V/C
     
-    // Проверка на цифры
+    // Check for numbers
     const isNumber = e.key >= '0' && e.key <= '9';
     const isControl = allowedKeys.includes(e.key);
 
@@ -115,19 +115,19 @@ amountInput.addEventListener("keydown", (e) => {
         e.preventDefault();
     }
 
-    // Запрет второй точки
+    // Block second dot
     if (e.key === '.' && amountInput.value.includes('.')) {
         e.preventDefault();
     }
 });
 
-// Финальная зачистка при вставке (если кто-то умудрился вставить буквы через мышку)
+// Final cleanup on paste (in case someone managed to paste letters using the mouse)
 amountInput.addEventListener("input", (e) => {
-    // Регулярное выражение: оставить только цифры и одну точку
+    // Regular expression: keep only numbers and one dot
     let value = e.target.value;
     e.target.value = value.replace(/[^0-9.]/g, '');
     
-    // Если точек больше одной — оставляем только первую
+    // If there are more than one dots — keep only the first
     const parts = e.target.value.split('.');
     if (parts.length > 2) {
         e.target.value = parts[0] + '.' + parts.slice(1).join('');
