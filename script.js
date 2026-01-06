@@ -132,5 +132,4 @@ amountInput.addEventListener("input", (e) => {
     if (parts.length > 2) {
         e.target.value = parts[0] + '.' + parts.slice(1).join('');
     }
-
 });
