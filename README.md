@@ -2,7 +2,9 @@
 
 A reliable web application for real-time currency conversion, built with a focus on security and clean user experience.
 
-I will be fixing all Bugs if I will spot them
+Note on Currency Support: > While the application supports a wide range of global currencies, some (particularly certain African currencies) may be unavailable or outdated. This is a limitation of the free tier of the ExchangeRate-API used in this project.
+
+Maintenance: > I am actively monitoring the project and will provide bug fixes as they are identified.
 
 ## 🌟 Key Features
 * **Secure Backend**: Uses a Node.js/Express proxy to hide sensitive API keys from the client-side.
